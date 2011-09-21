@@ -28,7 +28,7 @@ object Reader {
 			}
 		}
 		
-		val newRows = rows map { row => 
+		val newRows = rows.par map { row => 
 			val columnNos = 0 until row.size
 			columnNos map { colNo =>
 				processCell(headers(colNo), row(colNo))
@@ -66,7 +66,7 @@ object Reader {
 
 		readFile(Config.csvfile).toList match {
 			case headers :: rows => {
-				for (i <- 1 to 4000) processData(headers, rows)
+//				for (i <- 1 to 4000) processData(headers, rows)
 				
 				val start = System.currentTimeMillis
 				val result = processData(headers, rows)

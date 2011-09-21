@@ -1,6 +1,10 @@
 package tasks
 
-@Typed
+import groovyx.gpars.GParsPool
+import groovyx.gpars.ParallelEnhancer
+import java.util.concurrent.CopyOnWriteArrayList
+
+@Typed(TypePolicy.MIXED)
 class ReaderGPP {
 	
 	def readFile(String path) {
@@ -31,8 +35,9 @@ class ReaderGPP {
 			}
 		}
 		
-		List<List<String>> newRows = [][]
-		rows.each { row ->
+		ParallelEnhancer.enhanceInstance(rows)
+		def newRows = new CopyOnWriteArrayList<List<String>> ()
+		rows.eachParallel { row ->
 			List<String> newRow = []
 			row.eachWithIndex { String column, Integer colIndex ->
 				String header = headers.get(colIndex)
@@ -76,7 +81,7 @@ class ReaderGPP {
 		List<List<String>> result = rG.readFile(Config.csvfile)
 		def headers = result.get(0)
 		def rows = result[1..(result.size() - 1)]		
-		for (i in 1..4000) rG.processData(headers, rows)
+//		for (i in 1..4000) rG.processData(headers, rows)
 		
 		def start = System.currentTimeMillis()
 		def processedData = rG.processData(headers, rows)	

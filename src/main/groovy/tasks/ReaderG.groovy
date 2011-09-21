@@ -1,5 +1,8 @@
 package tasks
 
+import groovyx.gpars.GParsPool
+import groovyx.gpars.ParallelEnhancer
+
 class ReaderG {
 	
 	def readFile(path) {
@@ -29,15 +32,17 @@ class ReaderG {
 			}
 		}
 		
+		ParallelEnhancer.enhanceInstance(rows)
 		def newRows = [][]
-		rows.eachWithIndex { row, rowIndex ->
+		rows.eachWithIndexParallel { row, rowIndex ->
 			def newRow = []
 			row.eachWithIndex { column, colIndex ->
 				newRow += processCell(headers[colIndex], column)
 			}
-			newRows[rowIndex] = newRow	
+			newRows[rowIndex] = [newRow]	// this maybe raise condition if there are 2 writers, however we are just copying 1 cell at a time
+//			newRows += [newRow]
 		}
-		
+
 		return [newHeaders] + newRows
 	}
 	

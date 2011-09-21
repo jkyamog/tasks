@@ -26,6 +26,11 @@
 		    <artifactId>groovypp</artifactId>
 		    <version>0.9.0_1.8.2</version>
 		</dependency>
+        <dependency>
+            <groupId>org.codehaus.gpars</groupId>
+            <artifactId>gpars</artifactId>
+            <version>0.12</version>
+        </dependency>
 		<dependency>
 			<groupId>org.scala-tools.time</groupId>
 			<artifactId>time_2.9.1</artifactId>
@@ -86,6 +91,7 @@
 			<projectnatures>
 				<java.lang.String>org.scala-ide.sdt.core.scalanature</java.lang.String>
 				<java.lang.String>org.eclipse.jdt.core.javanature</java.lang.String>
+				<java.lang.String>org.eclipse.jdt.groovy.core.groovyNature</java.lang.String>
 			</projectnatures>
 			<buildcommands>
 				<java.lang.String>org.scala-ide.sdt.core.scalabuilder</java.lang.String>
