@@ -28,7 +28,7 @@ object Reader {
 			}
 		}
 		
-		val newRows = rows.par map { row => 
+		val newRows = rows map { row => 
 			val columnNos = 0 until row.size
 			columnNos map { colNo =>
 				processCell(headers(colNo), row(colNo))
@@ -41,16 +41,19 @@ object Reader {
 	val processors = Map (
 			"col1" -> Map("Col1" -> complicated1),
 			"col2" -> Map("Column2" -> complicated2),
-			"col4" -> Map("4" -> (complicated3 andThen complicated1))
+			"col3" -> Map("Col3" -> complicated1),
+			"col4" -> Map("4" -> (complicated3 andThen complicated1)),
+			"col5" -> Map("five" -> complicated2),
+			"col6" -> Map("s-i-x" -> complicated2)
 			)
 	
 	lazy val noop = (input: String) => input
 	lazy val complicated1 = (input: String) => {
-		(BigDecimal(input) * Math.pow(10, 20) / 33) toString
+		(BigDecimal(input) * 30000000000l / 333333333l) toString
 	}
 	lazy val complicated2 = (input: String) => {
 		try {
-			(BigDecimal(input) * Math.pow(input.toDouble, 50) / 31) toString
+			(BigDecimal(input) / 20000000l * Math.pow(input.toDouble, 20)) toString
 		} catch {
 			case _ => input
 		}
@@ -63,9 +66,12 @@ object Reader {
 
 		readFile(Config.csvfile).toList match {
 			case headers :: rows => {
+				for (i <- 1 to 4000) processData(headers, rows)
+				
 				val start = System.currentTimeMillis
 				val result = processData(headers, rows)
 				val finish = System.currentTimeMillis
+				
 				result foreach println
 				println(finish - start)
 			}
