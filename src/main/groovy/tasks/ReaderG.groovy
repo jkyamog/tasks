@@ -39,8 +39,8 @@ class ReaderG {
 			row.eachWithIndex { column, colIndex ->
 				newRow += processCell(headers[colIndex], column)
 			}
-			newRows[rowIndex] = [newRow]	// this maybe raise condition if there are 2 writers, however we are just copying 1 cell at a time
-//			newRows += [newRow]
+//			newRows[rowIndex] = [newRow]	// this maybe raise condition if there are 2 writers, however we are just copying 1 cell at a time
+			newRows += [newRow]
 		}
 
 		return [newHeaders] + newRows
@@ -79,7 +79,7 @@ class ReaderG {
 		def headers = result[0]
 		def rows = result[1..(result.size - 1)]
 		
-//		for (i in 1..4000) rG.processData(headers, rows)
+		for (i in 1..4) rG.processData(headers, rows)
 
 		def start = System.currentTimeMillis()
 		def processedData = rG.processData(headers, rows)	

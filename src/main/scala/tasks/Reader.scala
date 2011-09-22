@@ -66,7 +66,7 @@ object Reader {
 
 		readFile(Config.csvfile).toList match {
 			case headers :: rows => {
-//				for (i <- 1 to 4000) processData(headers, rows)
+				for (i <- 1 to 4) processData(headers, rows)
 				
 				val start = System.currentTimeMillis
 				val result = processData(headers, rows)

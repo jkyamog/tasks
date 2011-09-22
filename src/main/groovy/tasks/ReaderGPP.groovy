@@ -4,7 +4,8 @@ import groovyx.gpars.GParsPool
 import groovyx.gpars.ParallelEnhancer
 import java.util.concurrent.CopyOnWriteArrayList
 
-@Typed(TypePolicy.MIXED)
+
+@Typed(TypePolicy.STATIC)
 class ReaderGPP {
 	
 	def readFile(String path) {
@@ -26,6 +27,7 @@ class ReaderGPP {
 		}
 	}
 
+	@Typed(TypePolicy.MIXED)
 	def processData(List<String> headers, List<List<String>> rows) {
 		def newHeaders = headers collect { header ->
 			if (processors.containsKey(header)) {
@@ -81,7 +83,7 @@ class ReaderGPP {
 		List<List<String>> result = rG.readFile(Config.csvfile)
 		def headers = result.get(0)
 		def rows = result[1..(result.size() - 1)]		
-//		for (i in 1..4000) rG.processData(headers, rows)
+		for (i in 1..4) rG.processData(headers, rows)
 		
 		def start = System.currentTimeMillis()
 		def processedData = rG.processData(headers, rows)	
