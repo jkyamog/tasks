@@ -33,14 +33,12 @@ class ReaderG {
 		}
 		
 		ParallelEnhancer.enhanceInstance(rows)
-		def newRows = [][]
-		rows.eachWithIndexParallel { row, rowIndex ->
+		def newRows = rows.collectParallel { row ->
 			def newRow = []
 			row.eachWithIndex { column, colIndex ->
 				newRow += processCell(headers[colIndex], column)
 			}
-//			newRows[rowIndex] = [newRow]	// this maybe raise condition if there are 2 writers, however we are just copying 1 cell at a time
-			newRows += [newRow]
+			[newRow]
 		}
 
 		return [newHeaders] + newRows

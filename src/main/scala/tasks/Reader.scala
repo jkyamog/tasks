@@ -29,10 +29,8 @@ object Reader {
 		}
 		
 		val newRows = rows.par map { row => 
-			val columnNos = 0 until row.size
-			columnNos map { colNo =>
-				processCell(headers(colNo), row(colNo))
-			}
+			for (colNo <- 0 until row.size)
+				yield processCell(headers(colNo), row(colNo))
 		}
 		newHeaders :: newRows.toList
 	}
