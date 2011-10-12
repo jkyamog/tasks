@@ -1,6 +1,9 @@
 package tasks
 
-class ReaderG {
+import groovyx.gpars.GParsPool
+import groovyx.gpars.ParallelEnhancer
+
+class ReaderGPars {
 	
 	def readFile(path) {
 		def result = [][]
@@ -29,13 +32,13 @@ class ReaderG {
 			}
 		}
 		
-		def newRows = [][]
-		rows.each { row ->
+		ParallelEnhancer.enhanceInstance(rows)
+		def newRows = rows.collectParallel { row ->
 			def newRow = []
 			row.eachWithIndex { column, colIndex ->
 				newRow += processCell(headers[colIndex], column)
 			}
-			newRows += [newRow]
+			[newRow]
 		}
 
 		return [newHeaders] + newRows
@@ -68,7 +71,7 @@ class ReaderG {
 		]	
 	
 	static main(args) {
-		def rG = new ReaderG()
+		def rG = new ReaderGPars()
 		
 		def result = rG.readFile(Config.csvfile)
 		def headers = result[0]
@@ -89,6 +92,3 @@ class ReaderG {
 
 }
 
-class Config {
-	static String csvfile = "/Users/jyamog/tmp/test.csv"
-}

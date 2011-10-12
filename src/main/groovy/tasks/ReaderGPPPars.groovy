@@ -1,26 +1,34 @@
 package tasks
 
-class ReaderG {
+import groovyx.gpars.GParsPool
+import groovyx.gpars.ParallelEnhancer
+import java.util.concurrent.CopyOnWriteArrayList
+
+
+@Typed(TypePolicy.STATIC)
+class ReaderGPPPars {
 	
-	def readFile(path) {
-		def result = [][]
+	def readFile(String path) {
+		List<List<String>> result = [][]
 		new File(path).withReader{ reader ->
 			reader.eachLine{ line ->
-				result += line.split(",")
+				result.add(line.split(",") as List)
 			}
 		}
+		return result
 	}
 
-	def processCell(header, cell) {
+	def String processCell(String header, String cell) {
 		if (processors.containsKey(header)) {
 			def func = processors.get(header) find { true } value
 			func(cell)
 		} else {
-			cell
+			return cell
 		}
 	}
 
-	def processData(headers, rows) {
+	@Typed(TypePolicy.MIXED)
+	def processData(List<String> headers, List<List<String>> rows) {
 		def newHeaders = headers collect { header ->
 			if (processors.containsKey(header)) {
 				processors.get(header) find { true } key
@@ -29,23 +37,25 @@ class ReaderG {
 			}
 		}
 		
-		def newRows = [][]
-		rows.each { row ->
-			def newRow = []
-			row.eachWithIndex { column, colIndex ->
-				newRow += processCell(headers[colIndex], column)
+		ParallelEnhancer.enhanceInstance(rows)
+		def newRows = new CopyOnWriteArrayList<List<String>> ()
+		rows.eachParallel { row ->
+			List<String> newRow = []
+			row.eachWithIndex { String column, Integer colIndex ->
+				String header = headers.get(colIndex)
+				newRow.add(processCell(header, column))
 			}
-			newRows += [newRow]
+			newRows.add(newRow)	
 		}
-
+		
 		return [newHeaders] + newRows
 	}
 	
-	def complicated1 = { input ->
+	Closure complicated1 = { input ->
 		(input as BigDecimal) * 30000000000l / 333333333l
 	}
 	
-	def complicated2 = { input ->
+	Closure complicated2 = { input ->
 		try {
 			(input as BigDecimal) / 20000000l * Math.pow(input as Double, 20)
 		} catch (e) {
@@ -53,29 +63,28 @@ class ReaderG {
 		}
 	}
 	
-	def complicated3 = { input -> 
+	Closure complicated3 = { input ->
 		10 * (input as Double)
 	}
 
 	
-	def processors = [
+	Map<String,Map<String, Closure>> processors = [
 			"col1": ["Col1": complicated1],
 			"col2": ["Column2": complicated2],
 			"col3": ["Col3": complicated1],
 			"col4": ["4": complicated3 << complicated1],
 			"col5": ["five": complicated2],
 			"col6": ["s-i-x": complicated2],
-		]	
+		]
 	
 	static main(args) {
-		def rG = new ReaderG()
+		def rG = new ReaderGPPPars()
 		
-		def result = rG.readFile(Config.csvfile)
-		def headers = result[0]
-		def rows = result[1..(result.size - 1)]
-		
+		List<List<String>> result = rG.readFile(Config.csvfile)
+		def headers = result.get(0)
+		def rows = result[1..(result.size() - 1)]		
 		for (i in 1..4) rG.processData(headers, rows)
-
+		
 		def start = System.currentTimeMillis()
 		def processedData = rG.processData(headers, rows)	
 		def finish = System.currentTimeMillis()
@@ -89,6 +98,5 @@ class ReaderG {
 
 }
 
-class Config {
-	static String csvfile = "/Users/jyamog/tmp/test.csv"
-}
+
+

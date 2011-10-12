@@ -1,10 +1,5 @@
 package tasks
 
-import groovyx.gpars.GParsPool
-import groovyx.gpars.ParallelEnhancer
-import java.util.concurrent.CopyOnWriteArrayList
-
-
 @Typed(TypePolicy.STATIC)
 class ReaderGPP {
 	
@@ -27,7 +22,6 @@ class ReaderGPP {
 		}
 	}
 
-	@Typed(TypePolicy.MIXED)
 	def processData(List<String> headers, List<List<String>> rows) {
 		def newHeaders = headers collect { header ->
 			if (processors.containsKey(header)) {
@@ -37,15 +31,14 @@ class ReaderGPP {
 			}
 		}
 		
-		ParallelEnhancer.enhanceInstance(rows)
-		def newRows = new CopyOnWriteArrayList<List<String>> ()
-		rows.eachParallel { row ->
+		final List<List<String>> newRows = [][]
+		rows.each { row ->
 			List<String> newRow = []
 			row.eachWithIndex { String column, Integer colIndex ->
 				String header = headers.get(colIndex)
 				newRow.add(processCell(header, column))
 			}
-			newRows.add(newRow)	
+			newRows.add(newRow)
 		}
 		
 		return [newHeaders] + newRows
