@@ -78,8 +78,3 @@ object Reader {
 	}
 
 }
-
-
-object Config {
-	val csvfile = "/Users/jyamog/tmp/test.csv" 
-}

@@ -88,7 +88,3 @@ class ReaderG {
 	}
 
 }
-
-class Config {
-	static String csvfile = "/Users/jyamog/tmp/test.csv"
-}
