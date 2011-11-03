@@ -86,7 +86,7 @@
 				<exclude>org.scala-lang:scala-library</exclude>
 			</excludes>
 			<classpathContainers>
-				<classpathContainer>ch.epfl.lamp.sdt.launching.SCALA_CONTAINER</classpathContainer>
+				<classpathContainer>org.scala-ide.sdt.launching.SCALA_CONTAINER</classpathContainer>
 			</classpathContainers>
 			<projectnatures>
 				<java.lang.String>org.scala-ide.sdt.core.scalanature</java.lang.String>
