@@ -9,7 +9,7 @@ object Reader {
 	def readFile(fileName: String) = {
 		val lines = Source.fromFile(fileName, "UTF-8").getLines()
 		val splittedLines = for (line <- lines) yield line.split(",") 
-		splittedLines.toList
+		splittedLines
 	}
 
 	def processCell(header: String, cell: String): String = {
@@ -28,7 +28,7 @@ object Reader {
 			}
 		}
 		
-		val newRows = rows.par map { row => 
+		val newRows = rows map { row => 
 			for (colNo <- 0 until row.size)
 				yield processCell(headers(colNo), row(colNo))
 		}

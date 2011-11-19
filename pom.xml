@@ -127,7 +127,7 @@
 					<configuration>
 						<sources>
 							<source>src/test/scala</source>
-							<source>src/main/groovy</source>
+							<source>src/test/groovy</source>
 						</sources>
 					</configuration>
 				</execution>
